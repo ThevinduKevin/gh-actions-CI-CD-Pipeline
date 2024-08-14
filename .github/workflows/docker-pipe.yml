@@ -1,0 +1,6 @@
+name: Build and Push Docker Image
+on:
+  push:
+    branch: main
+jobs:
+  
