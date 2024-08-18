@@ -1,4 +1,4 @@
-FROM node:18-alphine
+FROM node:18-slim
 
 WORKDIR /app
 
