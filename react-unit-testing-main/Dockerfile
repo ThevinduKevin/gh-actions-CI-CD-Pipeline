@@ -6,7 +6,7 @@ COPY package.json package-lock.json ./
 
 RUN npm ci
 
-COPY . /app/
+COPY . .
 
 EXPOSE 3000
 
