@@ -1,12 +1,12 @@
-FROM node:18-alphine
+FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
 RUN npm ci
 
-COPY . /app/
+COPY . .
 
 EXPOSE 3000
 
