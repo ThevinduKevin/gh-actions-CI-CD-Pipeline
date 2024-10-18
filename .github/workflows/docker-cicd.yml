@@ -4,7 +4,8 @@ on:
     branches:
       - main
 jobs:
-  build:
+  docker:
+    name: Push to Docker hub
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -24,4 +25,10 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/project-repo:latest
 
+ # ec2:
+  #  needs: docker
+   # name: Push Container to EC2 
+    #runs-on: ubuntu-latest
+    #steps:
+     # -name: 
     
