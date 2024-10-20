@@ -25,10 +25,30 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/project-repo:latest
 
- # ec2:
-  #  needs: docker
-   # name: Push Container to EC2 
-    #runs-on: ubuntu-latest
-    #steps:
-     # -name: 
+  ec2:
+    needs: docker
+    name: Push Container to EC2 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add SSH Key to Access EC2
+        run: |
+          echo "${{ secrets.EC2_KEY }}" > ec2_key.pem
+          chmod 600 ec2_key.pem 
+      - name: Deploy Docker image to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ec2_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
+            # Pull the latest image from Docker Hub
+            docker pull $DOCKER_HUB_USERNAME/project-repo:latest
+
+            # Stop and remove any existing container
+            docker stop project-container || true
+            docker rm project-container || true
+
+            # Run the new Docker container
+            docker run -d --name project-container -p 80:80 $DOCKER_HUB_USERNAME/project-repo:latest
+          EOF    
     
