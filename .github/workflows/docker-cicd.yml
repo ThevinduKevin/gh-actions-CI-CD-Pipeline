@@ -50,5 +50,5 @@ jobs:
 
           # Run the new Docker container
           docker run -d --name project-container -p 80:80 $DOCKER_HUB_USERNAME/project-repo:latest
-          EOF    
+          EOF   
     
