@@ -35,4 +35,17 @@ jobs:
         run: |
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
 
-         
+      - name: Deploy to EC2
+        run: |
+          # Set up SSH
+          echo "${{ secrets.EC2_PRIVATE_KEY }}" > ec2_private_key.pem
+          chmod 400 ec2_private_key.pem
+          
+          # SSH into EC2 and pull Docker image from ECR
+          ssh -o StrictHostKeyChecking=no -i ec2_private_key.pem ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+            docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
+            docker stop <your_container_name> || true
+            docker rm <your_container_name> || true
+            docker run -d --name <your_container_name> -p 80:80 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
+          EOF  
