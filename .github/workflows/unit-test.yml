@@ -1,0 +1,32 @@
+name: Unit Test and Build
+on:
+  pull_request: 
+    type: [open, reopen]
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+      - name: Set up Node.js 
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16' # the version
+      - name: Install dependencies
+        run: npm install
+      - name: Run Unit Tests
+        run: npm test 
+
+  build:
+    name: Build the Project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install Dependencies
+        run: npm install
+      - name: Build the project
+        run: npm run build
+
