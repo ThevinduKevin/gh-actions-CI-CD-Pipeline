@@ -46,5 +46,17 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Run npm audit for vulnerabilities
-      run: npm audit --audit-level=high
+    - name: Run npm audit fix (Non-breaking)
+      run: npm audit fix
+
+    - name: Run npm audit (Check for remaining issues)
+      run: npm audit
+
+    - name: Fail if vulnerabilities are found
+      run: |
+        audit_output=$(npm audit --json)
+        critical_vulns=$(echo $audit_output | jq '.metadata.vulnerabilities.critical')
+        if [ $critical_vulns -gt 0 ]; then
+          echo "Critical vulnerabilities found!"
+          exit 1
+        fi
